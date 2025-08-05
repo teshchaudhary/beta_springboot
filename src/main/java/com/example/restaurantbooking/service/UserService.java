@@ -25,4 +25,13 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()));
     }
+    public User save(User user) {
+    return userRepository.save(user);
+    
+    }
+    public Optional<User> findByEmail(String email) {
+    return userRepository.findByEmail(email);
+}
+
+
 }
