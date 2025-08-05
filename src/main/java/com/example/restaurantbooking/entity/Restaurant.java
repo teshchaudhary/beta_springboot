@@ -1,40 +1,34 @@
 package com.example.restaurantbooking.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "restaurants")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class Restaurant {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @NotBlank(message = "Name is required")
     @Column(nullable = false)
     private String name;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
-    @Column(unique = true, nullable = false)
-    private String email;
-
-    @NotBlank(message = "Password is required")
-    @JsonIgnore
     @Column(nullable = false)
-    private String password;
+    private String image;
+
+    @Column(nullable = false)
+    private String location;
+
+    @Column(nullable = false)
+    private String cuisine_type;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -44,13 +38,13 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        Instant now = Instant.now();
+        Instant now = Instant.now();  // UTC timestamp
         this.createdAt = now;
         this.updatedAt = now;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = Instant.now();
+        this.updatedAt = Instant.now();  // UTC timestamp
     }
 }
