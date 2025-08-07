@@ -1,13 +1,18 @@
 package com.example.restaurantbooking.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
+
 
 @Entity
 @Table(name = "users")
@@ -35,6 +40,9 @@ public class User {
     @JsonIgnore
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Booking> bookings = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
