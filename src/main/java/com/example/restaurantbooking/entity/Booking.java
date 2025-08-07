@@ -6,29 +6,37 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "restaurants")
+@Table(name = "bookings")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Restaurant {
+public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "slot_id", nullable = false)
+    private Slot slot;
 
-    @Column(nullable = false)
-    private String image;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false)
-    private String location;
+    @Column(name = "customer_name", nullable = false)
+    private String customerName;
 
-    @Column(nullable = false)
-    private String cuisine_type;
+    @Column(name = "contact_number", nullable = false)
+    private String contactNumber;
+
+    @Column(name = "booking_date", nullable = false)
+    private Instant bookingDate;
+
+    @Column(name = "num_guests", nullable = false)
+    private Integer numGuests;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

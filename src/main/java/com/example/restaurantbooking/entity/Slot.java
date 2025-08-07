@@ -4,31 +4,33 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalTime;
 
 @Entity
-@Table(name = "restaurants")
+@Table(name = "slots")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Restaurant {
+public class Slot {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    @Column(name = "start_time", nullable = false)
+    private LocalTime startTime;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
     @Column(nullable = false)
-    private String image;
-
-    @Column(nullable = false)
-    private String location;
-
-    @Column(nullable = false)
-    private String cuisine_type;
+    private Integer capacity;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
