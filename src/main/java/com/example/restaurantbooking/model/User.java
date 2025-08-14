@@ -1,4 +1,4 @@
-package com.example.restaurantbooking.entity;
+package com.example.restaurantbooking.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
