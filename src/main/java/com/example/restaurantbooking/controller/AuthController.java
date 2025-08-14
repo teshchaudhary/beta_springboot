@@ -18,6 +18,13 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    private final JwtUtil jwtUtil;
+
+    @Autowired
+    public AuthController(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
         if (user.getEmail() == null || user.getEmail().isBlank() ||
@@ -30,7 +37,7 @@ public class AuthController {
         }
 
         User created = userService.registerUser(user);
-        String token = JwtUtil.generateToken(created.getEmail());
+        String token = jwtUtil.generateToken(created.getEmail());
 
         return ResponseEntity.ok(Map.of(
                 "message", "User registered",
@@ -41,23 +48,23 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Map<String, String> body) {
-    String email = body.get("email");
-    String password = body.get("password");
+        String email = body.get("email");
+        String password = body.get("password");
 
-    if (email == null || password == null) {
-        return ResponseEntity.badRequest().body(Map.of("message", "Email and password are required"));
-    }
+        if (email == null || password == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email and password are required"));
+        }
 
-    return userService.login(email, password)
-            .map(value -> {
-                String token = JwtUtil.generateToken(value.getEmail());
-                return ResponseEntity.ok(Map.of(
-                        "message", "Login success",
-                        "user", value,
-                        "token", token
-                ));
-            })
-            .orElseGet(() -> ResponseEntity.status(401).body(Map.of("message", "Invalid credentials")));
+        return userService.login(email, password)
+                .map(value -> {
+                    String token = jwtUtil.generateToken(value.getEmail());
+                    return ResponseEntity.ok(Map.of(
+                            "message", "Login success",
+                            "user", value,
+                            "token", token
+                    ));
+                })
+                .orElseGet(() -> ResponseEntity.status(401).body(Map.of("message", "Invalid credentials")));
     }
 
     @GetMapping("/oauth2/success")
@@ -76,7 +83,7 @@ public class AuthController {
             return userService.save(newUser);
         });
 
-        String token = JwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail());
 
         return ResponseEntity.ok(Map.of(
                 "message", "Logged in with Google",
