@@ -1,6 +1,6 @@
 package com.example.restaurantbooking.service;
 
-import com.example.restaurantbooking.entity.User;
+import com.example.restaurantbooking.model.User;
 import com.example.restaurantbooking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,6 +31,15 @@ public class UserService {
     }
     public Optional<User> findByEmail(String email) {
     return userRepository.findByEmail(email);
+}
+public User registerOAuth2User(String email, String name, String provider) {
+    User user = User.builder()
+            .email(email)
+            .name(name)
+            .password(UUID.randomUUID().toString()) // random password for OAuth users
+            .provider(provider)
+            .build();
+    return userRepository.save(user);
 }
 
 

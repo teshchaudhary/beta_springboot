@@ -1,6 +1,6 @@
 package com.example.restaurantbooking.controller;
 
-import com.example.restaurantbooking.entity.User;
+import com.example.restaurantbooking.model.User;
 import com.example.restaurantbooking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,22 +36,30 @@ public class AuthController {
 
     @GetMapping("/oauth2/success")
 public ResponseEntity<?> oauth2Success(OAuth2AuthenticationToken authentication) {
-    String email = authentication.getPrincipal().getAttribute("email");
-    String name = authentication.getPrincipal().getAttribute("name");
-
+    Map<String, Object> attributes = authentication.getPrincipal().getAttributes();
+    String email = (String) attributes.get("email");
+    String name = (String) attributes.get("name");
+    
     Optional<User> existingUser = userService.findByEmail(email);
-
+    
     User user = existingUser.orElseGet(() -> {
         User newUser = User.builder()
                 .email(email)
                 .name(name)
-                .password("") // empty or special flag for Google
+                .password(UUID.randomUUID().toString()) // random password for OAuth users
+                .provider("google")
                 .build();
         return userService.save(newUser);
     });
-
-    // You can return a token or session info here later
-    return ResponseEntity.ok(Map.of("message", "Logged in with Google", "user", user));
+    
+    // Generate JWT token for the user
+    String token = jwtService.generateToken(user);
+    
+    return ResponseEntity.ok(Map.of(
+        "message", "Logged in with Google",
+        "user", user,
+        "token", token
+    ));
 }
 
 }

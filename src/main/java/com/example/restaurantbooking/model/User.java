@@ -1,4 +1,4 @@
-package com.example.restaurantbooking.entity;
+package com.example.restaurantbooking.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -40,6 +40,7 @@ public class User {
     @JsonIgnore
     @Column(nullable = false)
     private String password;
+    private String provider = "local";
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
@@ -61,4 +62,5 @@ public class User {
     protected void onUpdate() {
         this.updatedAt = Instant.now();
     }
+    
 }
