@@ -2,12 +2,13 @@ package com.example.restaurantbooking.controller;
 
 import com.example.restaurantbooking.model.User;
 import com.example.restaurantbooking.service.UserService;
+import com.example.restaurantbooking.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
-
+import java.util.UUID;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
-
+    private JwtService jwtService;
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
         User created = userService.registerUser(user);
