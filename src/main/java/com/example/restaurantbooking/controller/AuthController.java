@@ -1,6 +1,6 @@
 package com.example.restaurantbooking.controller;
 
-import com.example.restaurantbooking.entity.User;
+import com.example.restaurantbooking.model.User;
 import com.example.restaurantbooking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

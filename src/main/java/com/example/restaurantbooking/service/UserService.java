@@ -1,6 +1,6 @@
 package com.example.restaurantbooking.service;
 
-import com.example.restaurantbooking.entity.User;
+import com.example.restaurantbooking.model.User;
 import com.example.restaurantbooking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
