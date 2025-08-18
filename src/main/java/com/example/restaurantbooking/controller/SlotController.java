@@ -23,7 +23,7 @@ public class SlotController {
 
     // Create a slot for a restaurant
     @PostMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<Slot> createSlot(@PathVariable Long restaurantId, @RequestBody Slot slot) {
+    public ResponseEntity<Slot> createSlot(@PathVariable("restaurantId") Long restaurantId, @RequestBody Slot slot) {
         return restaurantRepository.findById(restaurantId)
                 .map(restaurant -> {
                     slot.setRestaurant(restaurant);
@@ -35,7 +35,7 @@ public class SlotController {
 
     // Get all slots for a restaurant
     @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<List<Slot>> getSlotsByRestaurant(@PathVariable Long restaurantId) {
+    public ResponseEntity<List<Slot>> getSlotsByRestaurant(@PathVariable("restaurantId") Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
                 .map(restaurant -> ResponseEntity.ok(slotRepository.findByRestaurant(restaurant)))
                 .orElse(ResponseEntity.notFound().build());
@@ -43,7 +43,7 @@ public class SlotController {
 
     // Get slot by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Slot> getSlotById(@PathVariable Integer id) {
+    public ResponseEntity<Slot> getSlotById(@PathVariable Long id) {
         return slotRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
