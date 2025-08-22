@@ -3,7 +3,6 @@ package com.example.restaurantbooking.controller;
 import com.example.restaurantbooking.model.User;
 import com.example.restaurantbooking.service.UserService;
 import com.example.restaurantbooking.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -15,13 +14,11 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private UserService userService;
-
+    private final UserService userService;
     private final JwtUtil jwtUtil;
-
-    @Autowired
-    public AuthController(JwtUtil jwtUtil) {
+    
+    public AuthController(UserService userService, JwtUtil jwtUtil) {
+        this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
