@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserService userService;
@@ -23,7 +23,6 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    // Email/password signup
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
         User saved = userService.registerUser(user);
@@ -31,7 +30,6 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "User registered", "token", token));
     }
 
-    // Email/password login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         Optional<User> userOpt = userService.login(credentials.get("email"), credentials.get("password"));
@@ -42,7 +40,6 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Login successful", "token", token));
     }
 
-    // Google OAuth callback
     @GetMapping("/oauth2/success")
     public ResponseEntity<?> oauth2Success(OAuth2AuthenticationToken authentication) {
         String email = authentication.getPrincipal().getAttribute("email");
@@ -67,5 +64,4 @@ public class AuthController {
                 "token", token
         ));
     }
-
 }

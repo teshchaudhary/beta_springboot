@@ -15,15 +15,18 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(
+                        "/api/auth/**",
+                        "/oauth2/**",
+                        "/login/oauth2/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form.disable())
-            .httpBasic(httpBasic -> httpBasic.disable())
+            .formLogin(form -> form.disable())   // disable default login page
+            .httpBasic(httpBasic -> httpBasic.disable()) // disable basic auth
             .oauth2Login(oauth -> oauth
-                .successHandler((request, response, authentication) -> {
-                    response.sendRedirect("/api/auth/oauth2/success");
-                })
+                .loginPage("/oauth2/authorization/google") // start Google login
+                .defaultSuccessUrl("/api/auth/oauth2/success", true) // send to JSON callback
             );
 
         return http.build();
