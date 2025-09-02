@@ -4,66 +4,45 @@ import com.example.restaurantbooking.model.User;
 import com.example.restaurantbooking.service.UserService;
 import com.example.restaurantbooking.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
-    
+
     public AuthController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
+    // Email/password signup
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() ||
-            user.getPassword() == null || user.getPassword().isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Email and password are required"));
-        }
-
-        if (userService.findByEmail(user.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Email already exists"));
-        }
-
-        User created = userService.registerUser(user);
-        String token = jwtUtil.generateToken(created.getEmail());
-
-        return ResponseEntity.ok(Map.of(
-                "message", "User registered",
-                "user", created,
-                "token", token
-        ));
+        User saved = userService.registerUser(user);
+        String token = jwtUtil.generateToken(saved.getEmail());
+        return ResponseEntity.ok(Map.of("message", "User registered", "token", token));
     }
 
-    @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        String password = body.get("password");
-
-        if (email == null || password == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Email and password are required"));
+    // Email/password login
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+        Optional<User> userOpt = userService.login(credentials.get("email"), credentials.get("password"));
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
-
-        return userService.login(email, password)
-                .map(value -> {
-                    String token = jwtUtil.generateToken(value.getEmail());
-                    return ResponseEntity.ok(Map.of(
-                            "message", "Login success",
-                            "user", value,
-                            "token", token
-                    ));
-                })
-                .orElseGet(() -> ResponseEntity.status(401).body(Map.of("message", "Invalid credentials")));
+        String token = jwtUtil.generateToken(userOpt.get().getEmail());
+        return ResponseEntity.ok(Map.of("message", "Login successful", "token", token));
     }
 
+    // Google OAuth callback
     @GetMapping("/oauth2/success")
     public ResponseEntity<?> oauth2Success(OAuth2AuthenticationToken authentication) {
         String email = authentication.getPrincipal().getAttribute("email");
@@ -75,7 +54,7 @@ public class AuthController {
             User newUser = User.builder()
                     .email(email)
                     .name(name)
-                    .password("") // empty or special flag for Google
+                    .password(UUID.randomUUID().toString())
                     .build();
             return userService.save(newUser);
         });
@@ -88,4 +67,5 @@ public class AuthController {
                 "token", token
         ));
     }
+
 }
